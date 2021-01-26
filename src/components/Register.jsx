@@ -1,6 +1,7 @@
 import {Button, Form} from 'react-bootstrap';
 
 const Register = () => {
+    
     return(
         <div style={{display:'flex', justifyContent:"center"}}>
             <Form className="mt-3"> 
@@ -15,7 +16,7 @@ const Register = () => {
                     <Form.Control type="password" placeholder="Password" />
                 </Form.Group>
 
-                <Form.Group controlId="formBasicPassword">
+                <Form.Group controlId="formConfirmPassword">
                     <Form.Label>Confirm Password</Form.Label>
                     <Form.Control type="password" placeholder="Password" />
                 </Form.Group>

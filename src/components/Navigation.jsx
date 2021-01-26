@@ -6,10 +6,10 @@ const Navigation = ({user}) =>{
     return (
         <div>
             <Navbar bg="primary" variant="dark">
+                <Navbar.Brand href="/"> Home </Navbar.Brand>
                 {user && (
                     <Nav className='mr-auto'>
-                        <Nav.Link href="/"> To-Do List </Nav.Link>
-                        <Nav.Link href=""> Welcome {user.displayName} </Nav.Link>
+                        <Nav.Item> Welcome {user.displayName} </Nav.Item>
                         <Nav.Link href="logout"> Log Out </Nav.Link>
                     </Nav>
                 )}
