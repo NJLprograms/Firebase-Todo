@@ -1,7 +1,7 @@
 import React from 'react';
 import {Nav} from 'react-bootstrap'
 
-const Home = (user) => {
+const Home = ({user}) => {
     return(
         <div>
             <div class="container text-center">
@@ -14,7 +14,7 @@ const Home = (user) => {
                             of a Single Page Application made for practice.
                         </p>
                         <Nav className="justify-content-center">
-                            {user&& (
+                            {!user&& (
                                 <Nav.Item>
                                     <Nav.Link href="/register" className="btn btn-outline-primary"> Register </Nav.Link>
                                     <br/>
@@ -22,11 +22,11 @@ const Home = (user) => {
                                 </Nav.Item>
                             )}
 
-                            {/* {user && (
+                            {user && (
                                 <Nav.Item>
                                     <Nav.Link href="/todo" className="btn btn-outline-primary"> Create a Todo </Nav.Link>
                                 </Nav.Item>
-                            )} */}
+                            )}
                         </Nav>
                     </div>
                 </div>

@@ -1,15 +1,15 @@
 import React from 'react';
 import {Navbar, Nav} from 'react-bootstrap'
 
-const Navigation = (user) =>{
-    console.log(user.displayName)
+const Navigation = ({user}) =>{
+    console.log()
     return (
         <div>
             <Navbar bg="primary" variant="dark">
-
                 {user && (
                     <Nav className='mr-auto'>
                         <Nav.Link href="/"> To-Do List </Nav.Link>
+                        <Nav.Link href=""> Welcome {user.displayName} </Nav.Link>
                         <Nav.Link href="logout"> Log Out </Nav.Link>
                     </Nav>
                 )}
