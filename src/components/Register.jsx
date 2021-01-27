@@ -1,32 +1,99 @@
-import {Button, Form} from 'react-bootstrap';
+import { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import FormError from './FormError';
+import {auth} from '../utils/Firebase';
+import {navigate} from "@reach/router"  
 
 const Register = () => {
-    
-    return(
-        <div style={{display:'flex', justifyContent:"center"}}>
-            <Form className="mt-3"> 
-                <Form.Group controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
-                    <Form.Text className="text-muted"></Form.Text>
-                </Form.Group>
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
 
-                <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
+  const handleSubmit = (event) => {
+    event.preventDefault(); // prevent page from refreshing on submit
+    console.log(email, password, confirmPassword);
+    if( password !== confirmPassword){
+      setError("Passwords do not match!")
+    }else if (password === confirmPassword){
+      auth.createUserWithEmailAndPassword(
+        email,
+        password
+      ).then(()=>{
+        auth.onAuthStateChanged(user =>{
+          user.updateProfile({
+            displayName: displayName
+          })
+        })
+      }).catch(error=>{
+        if(error.messsage !== null){
+          setError(error.message)
+        }else {
+          setError(null)
+        }
+      }).then(() => {
+        navigate('/');
+    })
+    }
+  };
 
-                <Form.Group controlId="formConfirmPassword">
-                    <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Form className="mt-3" onSubmit={handleSubmit}>
+        {error &&( <FormError message={error}/>)}
 
-                <Button variant="primary" type="submit">
-                    Register
-                </Button>
-            </Form> 
-        </div>
-    )
-}
+        <Form.Group controlId="formDisplayName">
+          <Form.Label>Display Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter your name"
+            onChange={(event) => {
+              setDisplayName(event.target.value);
+            }}
+          />
+          <Form.Text className="text-muted"></Form.Text>
+        </Form.Group>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            onChange={(event) => {
+              setEmail(event.target.value);
+            }}
+          />
+          <Form.Text className="text-muted"></Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            onChange={(event) => {
+              setPassword(event.target.value);
+            }}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formConfirmPassword">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            onChange={(event) => {
+              setConfirmPassword(event.target.value);
+            }}
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Register
+        </Button>
+      </Form>
+    </div>
+  );
+};
 
 export default Register;
