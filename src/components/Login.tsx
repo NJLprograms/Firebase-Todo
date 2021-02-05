@@ -2,29 +2,28 @@ import { Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
 import FormError from './FormError';
 import { auth } from '../utils/Firebase';
-import { navigate } from '@reach/router';
+import { Redirect } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault(); // prevent page from refreshing on submit
 
     console.log(email, password);
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .catch((error) => {
-        if (error.messsage !== null) {
-          setError(error.message);
-        } else {
-          setError(null);
-        }
-      })
-      .then(() => {
-        navigate('/');
+    try {
+      auth.signInWithEmailAndPassword(email, password).then(() => {
+        return <Redirect to="/" />;
       });
+    } catch (error) {
+      if (error.messsage !== null) {
+        setError(error.message);
+      } else {
+        setError(null);
+      }
+    }
   };
 
   return (

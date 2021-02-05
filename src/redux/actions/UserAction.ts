@@ -2,7 +2,7 @@ import firebase from 'firebase';
 export const LOGIN_SUCCESS = '[User] LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = '[User] LOGOUT_SUCCESS';
 
-export class UserActions {
+export class UserAction {
   static Login(payload: firebase.User | null) {
     return {
       type: LOGIN_SUCCESS,

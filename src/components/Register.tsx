@@ -2,32 +2,31 @@ import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import FormError from './FormError';
 import { auth } from '../utils/Firebase';
-import { navigate } from '@reach/router';
+import { Redirect } from 'react-router-dom';
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault(); // prevent page from refreshing on submit
     console.log(email, password, confirmPassword);
-    if (password !== confirmPassword) {
-      setError('Passwords do not match!');
-    } else if (password === confirmPassword) {
-      auth
-        .createUserWithEmailAndPassword(email, password)
-        .catch((error) => {
-          if (error.messsage !== null) {
-            setError(error.message);
-          } else {
-            setError(null);
-          }
-        })
-        .then(() => {
-          navigate('/');
+    try {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match!');
+      } else if (password === confirmPassword) {
+        auth.createUserWithEmailAndPassword(email, password).then(() => {
+          return <Redirect to="/" />;
         });
+      }
+    } catch (error) {
+      if (error.messsage !== null) {
+        setError(error.message);
+      } else {
+        setError(null);
+      }
     }
   };
 
