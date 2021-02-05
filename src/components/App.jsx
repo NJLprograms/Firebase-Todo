@@ -7,17 +7,21 @@ import Home from './Home';
 import Login from './Login';
 import Todo from './Todo';
 import Register from './Register';
+import { Provider } from 'react-redux';
+import { store } from '../redux/store';
 
 const App = () => {
   return (
     <div>
-      <Navigation user={null} />
-      <Router>
-        <Home path="/" user={null} />
-        <Login path="/login" />
-        <Todo path="/todo" />
-        <Register path="/register" />
-      </Router>
+      <Provider store={store}>
+        <Navigation />
+        <Router>
+          <Home path="/" />
+          <Login path="/login" />
+          <Todo path="/todo" />
+          <Register path="/register" />
+        </Router>
+      </Provider>
     </div>
   );
 };
