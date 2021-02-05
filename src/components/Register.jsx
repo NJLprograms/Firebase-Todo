@@ -1,59 +1,41 @@
 import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import FormError from './FormError';
-import {auth} from '../utils/Firebase';
-import {navigate} from "@reach/router"  
+import { auth } from '../utils/Firebase';
+import { navigate } from '@reach/router';
 
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
 
   const handleSubmit = (event) => {
     event.preventDefault(); // prevent page from refreshing on submit
     console.log(email, password, confirmPassword);
-    if( password !== confirmPassword){
-      setError("Passwords do not match!")
-    }else if (password === confirmPassword){
-      auth.createUserWithEmailAndPassword(
-        email,
-        password
-      ).then(()=>{
-        auth.onAuthStateChanged(user =>{
-          user.updateProfile({
-            displayName: displayName
-          })
+    if (password !== confirmPassword) {
+      setError('Passwords do not match!');
+    } else if (password === confirmPassword) {
+      auth
+        .createUserWithEmailAndPassword(email, password)
+        .catch((error) => {
+          if (error.messsage !== null) {
+            setError(error.message);
+          } else {
+            setError(null);
+          }
         })
-      }).catch(error=>{
-        if(error.messsage !== null){
-          setError(error.message)
-        }else {
-          setError(null)
-        }
-      }).then(() => {
-        navigate('/');
-    })
+        .then(() => {
+          navigate('/');
+        });
     }
   };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <Form className="mt-3" onSubmit={handleSubmit}>
-        {error &&( <FormError message={error}/>)}
+        {error && <FormError message={error} />}
 
-        <Form.Group controlId="formDisplayName">
-          <Form.Label>Display Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter your name"
-            onChange={(event) => {
-              setDisplayName(event.target.value);
-            }}
-          />
-          <Form.Text className="text-muted"></Form.Text>
-        </Form.Group>
         <Form.Group controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
