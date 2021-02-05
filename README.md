@@ -1,6 +1,6 @@
 # Firebase Todo
 
-This project was bootstrapped with [Create React App]. A simple SPA using React and Firebase.
+This project was bootstrapped with [Create React App]. A simple SPA using React, Redux, and Firebase.
 
 ## Available Scripts
 
