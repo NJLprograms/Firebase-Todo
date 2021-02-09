@@ -1,6 +1,7 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { useState } from 'react';
-import { Button, Form, Nav, Dropdown } from 'react-bootstrap';
+import { Button, Form, Nav, Jumbotron, ListGroup } from 'react-bootstrap';
 import { store } from '../redux/store';
 import { firestore } from '../utils/Firebase';
 
@@ -10,6 +11,7 @@ const Home = () => {
   const [priority, setPriority] = useState<string | null>(null);
   const [taskName, setName] = useState<string | null>(null);
   const [description, setDesc] = useState<string | null>(null);
+  const [todos, setTodo] = useState<any[]>([]);
   store.subscribe(() => {
     setUser(store.getState().user);
   });
@@ -31,6 +33,17 @@ const Home = () => {
       });
   };
 
+  useEffect(() => {
+    firestore()
+      .collection('todo')
+      .onSnapshot((snapshot) => {
+        const tasks = snapshot.docs.map((doc) => {
+          return { id: doc.id, ...doc.data };
+        });
+        setTodo(tasks);
+      });
+  }, []);
+
   return (
     <div>
       <div className="container text-center">
@@ -41,8 +54,8 @@ const Home = () => {
               This simple webapp creates tasks, allows you to set priority, and saves created tasks to
               user profiles. Simply an example of a Single Page Application made for practice.
             </p>
-            <Nav className="justify-content-center">
-              {!user && (
+            {!user && (
+              <Nav className="justify-content-center">
                 <Nav.Item>
                   <Nav.Link href="/register" className="btn btn-outline-primary">
                     Register
@@ -52,68 +65,68 @@ const Home = () => {
                     Login
                   </Nav.Link>
                 </Nav.Item>
-              )}
+              </Nav>
+            )}
 
-              {user && (
-                <Nav.Item>
-                  <Nav.Link
+            {user && (
+              <Jumbotron style={{ backgroundColor: 'white' }}>
+                <ListGroup>
+                  {todos.map((task) => {
+                    console.log(taskName);
+                    return <ListGroup.Item key={task.id}>{task.taskName}</ListGroup.Item>;
+                  })}
+                </ListGroup>
+                <br />
+                {!show && (
+                  <Button
                     onClick={() => {
                       toggleShow(true);
                     }}
-                    className="btn btn-outline-primary"
                   >
-                    {!show && `Create a Todo`}
-                    {show && (
-                      <div>
-                        <Dropdown>
-                          <Dropdown.Toggle variant="success" id="dropdown-basic">
-                            View Todos
-                          </Dropdown.Toggle>
-
-                          <Dropdown.Menu>
-                            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                        <Form onSubmit={createToDo}>
-                          <Form.Group
-                            onChange={(event: any) => {
-                              setName(event.target.value);
-                            }}
-                            controlId="Name"
-                          >
-                            <Form.Label>Task Name</Form.Label>
-                            <Form.Control placeholder="Task" />
-                          </Form.Group>
-
-                          <Form.Group
-                            onChange={(event: any) => {
-                              setDesc(event.target.value);
-                            }}
-                            controlId="Description"
-                          >
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control
-                              onChange={(event: any) => {
-                                setPriority(event.target.value);
-                              }}
-                              placeholder="What is it?"
-                            />
-                          </Form.Group>
-                          <Form.Group controlId="Priority">
-                            <Form.Check type="radio" label="High" />
-                            <Form.Check type="radio" label="Medium" />
-                            <Form.Check type="radio" label="Low" />
-                          </Form.Group>
-                          <Button variant="primary" type="submit">
-                            Submit
-                          </Button>
-                        </Form>
-                      </div>
-                    )}
-                  </Nav.Link>
-                </Nav.Item>
-              )}
-            </Nav>
+                    Create a Todo
+                  </Button>
+                )}
+                {show && (
+                  <div>
+                    <Form onSubmit={createToDo}>
+                      <Form.Group controlId="Name">
+                        <Form.Label>Task Name</Form.Label>
+                        <Form.Control
+                          onChange={(event: any) => {
+                            setName(event.target.value);
+                          }}
+                          placeholder="Task"
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="Description">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                          onChange={(event: any) => {
+                            setDesc(event.target.value);
+                          }}
+                          placeholder="What is it?"
+                        />
+                      </Form.Group>
+                      <Form.Group
+                        onChange={(event: any) => {
+                          setPriority(event.target.value);
+                          console.log(event.target.value);
+                        }}
+                        placeholder="What is it?"
+                        controlId="Priority"
+                      >
+                        <Form.Check name="priority" type="radio" value="High" label="High" />
+                        <Form.Check name="priority" type="radio" value="Medium" label="Medium" />
+                        <Form.Check name="priority" type="radio" value="Low" label="Low" />
+                      </Form.Group>
+                      <Button variant="primary" type="submit">
+                        Submit
+                      </Button>
+                    </Form>
+                  </div>
+                )}
+              </Jumbotron>
+            )}
           </div>
         </div>
       </div>
