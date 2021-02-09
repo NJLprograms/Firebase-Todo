@@ -1,17 +1,23 @@
 import React from 'react';
+import { useState } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { store } from '../redux/store';
+import { logout } from '../utils/UserAuth';
 
 const Navigation = () => {
-  const { user } = store.getState();
+  const [user, setUser] = useState(null);
+  store.subscribe(() => {
+    setUser(store.getState().user);
+  });
+
   return (
     <div>
       <Navbar bg="primary" variant="dark">
         <Navbar.Brand href="/"> Home </Navbar.Brand>
         {user && (
           <Nav className="mr-auto">
-            <Nav.Item> Welcome {user.displayName} </Nav.Item>
-            <Nav.Link href="logout"> Log Out </Nav.Link>
+            <Nav.Item> Welcome </Nav.Item>
+            <Nav.Link onClick={logout}> Log Out </Nav.Link>
           </Nav>
         )}
 

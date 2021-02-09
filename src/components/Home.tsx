@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Nav } from 'react-bootstrap';
 import { store } from '../redux/store';
 
 const Home = () => {
-  const { user } = store.getState();
+  const [user, setUser] = useState(null);
+  store.subscribe(() => {
+    setUser(store.getState().user);
+  });
+  console.log(user);
   return (
     <div>
       <div className="container text-center">

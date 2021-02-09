@@ -2,21 +2,28 @@ import { Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
 import FormError from './FormError';
 import { auth } from '../utils/Firebase';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { store } from '../redux/store';
+import { UserAction } from '../redux/actions/UserAction';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [password, setPassword] = useState('');
+  const history = useHistory();
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault(); // prevent page from refreshing on submit
 
     console.log(email, password);
     try {
-      auth.signInWithEmailAndPassword(email, password).then(() => {
-        return <Redirect to="/" />;
-      });
+      auth()
+        .setPersistence(auth.Auth.Persistence.SESSION)
+        .then(async () => {
+          const loginData = await auth().signInWithEmailAndPassword(email, password);
+          store.dispatch(UserAction.Login(loginData.user));
+          history.push('/');
+        });
     } catch (error) {
       if (error.messsage !== null) {
         setError(error.message);

@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import FormError from './FormError';
 import { auth } from '../utils/Firebase';
-import { Redirect } from 'react-router-dom';
+import { store } from '../redux/store';
+import { UserAction } from '../redux/actions/UserAction';
+import { useHistory } from 'react-router-dom';
 
 const Register = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
 
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault(); // prevent page from refreshing on submit
@@ -17,9 +20,13 @@ const Register = () => {
       if (password !== confirmPassword) {
         setError('Passwords do not match!');
       } else if (password === confirmPassword) {
-        auth.createUserWithEmailAndPassword(email, password).then(() => {
-          return <Redirect to="/" />;
-        });
+        auth()
+          .setPersistence(auth.Auth.Persistence.SESSION)
+          .then(async () => {
+            const signUpData = await auth().createUserWithEmailAndPassword(email, password);
+            store.dispatch(UserAction.Login(signUpData.user));
+            history.push('/');
+          });
       }
     } catch (error) {
       if (error.messsage !== null) {
