@@ -18,32 +18,37 @@ const Home = () => {
   const createToDo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     firestore()
-      .collection('todo')
-      .doc(taskName || undefined)
-      .set({
+      .collection('users')
+      .doc(user.uid || undefined)
+      .collection('todos')
+      .add({
         taskName,
         description,
         priority,
+        createdOn: firestore.Timestamp.now(),
       })
       .then(() => {
         console.log('Document successfully written!');
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Error writing document: ', error);
       });
   };
 
   useEffect(() => {
     firestore()
-      .collection('todo')
+      .collection('users')
+      .doc(user?.uid)
+      .collection('todos')
+      .orderBy('createdOn', 'desc')
       .onSnapshot((snapshot) => {
         const tasks = snapshot.docs.map((doc) => {
-          return { id: doc.id, ...doc.data };
+          return { id: doc.id, ...doc.data() };
         });
         setTodo(tasks);
       });
-  }, []);
-
+  }, [user?.uid]);
+  console.log(todos);
   return (
     <div>
       <div className="container text-center">
@@ -70,12 +75,14 @@ const Home = () => {
 
             {user && (
               <Jumbotron style={{ backgroundColor: 'white' }}>
-                <ListGroup>
-                  {todos.map((task) => {
-                    console.log(taskName);
-                    return <ListGroup.Item key={task.id}>{task.taskName}</ListGroup.Item>;
-                  })}
-                </ListGroup>
+                {!!todos.length && (
+                  <ListGroup>
+                    {todos.map((task) => {
+                      console.log(taskName);
+                      return <ListGroup.Item key={task?.id}>{task?.taskName}</ListGroup.Item>;
+                    })}
+                  </ListGroup>
+                )}
                 <br />
                 {!show && (
                   <Button

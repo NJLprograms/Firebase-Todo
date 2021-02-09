@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import FormError from './FormError';
-import { auth } from '../utils/Firebase';
+import { auth, firestore } from '../utils/Firebase';
 import { store } from '../redux/store';
 import { UserAction } from '../redux/actions/UserAction';
 import { useHistory } from 'react-router-dom';
@@ -16,24 +16,20 @@ const Register = () => {
   const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault(); // prevent page from refreshing on submit
     console.log(email, password, confirmPassword);
-    try {
-      if (password !== confirmPassword) {
-        setError('Passwords do not match!');
-      } else if (password === confirmPassword) {
-        auth()
-          .setPersistence(auth.Auth.Persistence.SESSION)
-          .then(async () => {
-            const signUpData = await auth().createUserWithEmailAndPassword(email, password);
-            store.dispatch(UserAction.Login(signUpData.user));
-            history.push('/');
-          });
-      }
-    } catch (error) {
-      if (error.messsage !== null) {
-        setError(error.message);
-      } else {
-        setError(null);
-      }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match!');
+    } else if (password === confirmPassword) {
+      auth()
+        .setPersistence(auth.Auth.Persistence.SESSION)
+        .then(async () => {
+          const signUpData = await auth().createUserWithEmailAndPassword(email, password);
+          store.dispatch(UserAction.Login(signUpData.user));
+          await firestore().collection('users').doc(signUpData.user?.uid).set({});
+          history.push('/');
+        })
+        .catch((error) => {
+          setError(error.message);
+        });
     }
   };
 
