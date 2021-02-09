@@ -7,7 +7,6 @@ import { store } from '../redux/store';
 import Home from './Home';
 import Login from './Login';
 import Register from './Register';
-import Todo from './Todo';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 const App = () => {
@@ -27,10 +26,6 @@ const App = () => {
 
           <Route exact path="/login">
             <Login />
-          </Route>
-
-          <Route exact path="/todo">
-            <Todo />
           </Route>
         </Router>
       </Provider>
