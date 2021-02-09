@@ -16,15 +16,14 @@ const Navigation = () => {
         <Navbar.Brand href="/"> Home </Navbar.Brand>
         {user && (
           <Nav className="mr-auto">
-            <Nav.Item> Welcome </Nav.Item>
             <Nav.Link onClick={logout}> Log Out </Nav.Link>
           </Nav>
         )}
 
         {!user && (
           <Nav className="mr-auto">
-            <Nav.Link href="register">Register</Nav.Link>
-            <Nav.Link href="login">Log In</Nav.Link>
+            <Nav.Link href="/register">Register</Nav.Link>
+            <Nav.Link href="/login">Log In</Nav.Link>
           </Nav>
         )}
       </Navbar>
